@@ -2,6 +2,7 @@ const { join } = require('path')
 const { readFileSync } = require('fs')
 const express = require('express')
 const google = require('./lib/google')
+const cors = require('cors')
 
 require('dotenv').config()
 
@@ -13,6 +14,7 @@ const {
 } = process.env
 
 const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
