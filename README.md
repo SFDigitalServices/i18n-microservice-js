@@ -12,18 +12,20 @@ translation data. There is currently only one endpoint:
     ```
 
 ### Query string parameters
-* `worksheets` filters the translations by one or more worksheet indices and/or
-  names. For instance:
+* `sheet` filters the translations by one or more worksheet indices and/or
+  titles. For instance:
 
-  - `?worksheets=1` will match only the second worksheet (the first is index 0)
-  - `?worksheets=Generic+forms` will match only the worksheet titled "Generic
+  - `?sheet=1` will match only the second worksheet (the first is index 0)
+  - `?sheet=Generic+forms` will match only the worksheet titled "Generic
     forms"
-  - `?worksheets=*forms` will match all worksheets that end in "forms"
+  - `?sheet=*forms` will match all worksheets that end in "forms"
+  - `?sheet=1&sheet=2` will get the 2nd and 3rd worksheets
+  - `?sheet=!*wip*` will match worksheets that do _not_ contain "wip"
 
 ## Worksheet formatting
 Worksheets are expected to have a "key" column followed by one or more language
-code columns. The name of the key column isn't important, but for consistency
-you should use "String" or "Key".
+code columns. The name of the key column isn't significant, but for consistency
+it should be "String" or "Key".
 
 All of the rest of the columns should be named with [IETF language
 tags](https://en.wikipedia.org/wiki/IETF_language_tag), e.g. `en` for English,
