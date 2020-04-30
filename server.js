@@ -1,8 +1,8 @@
-const { join } = require('path')
-const { readFileSync } = require('fs')
 const express = require('express')
-const google = require('./lib/google')
 const cors = require('cors')
+const { bold } = require('chalk')
+const google = require('./lib/google')
+const log = require('./lib/log')
 
 require('dotenv').config()
 
@@ -20,5 +20,5 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/google', google({ apiKey: GOOGLE_API_KEY }))
 
 app.listen(PORT, () => {
-  console.log(`Translation microservice running on ${HOST}:${PORT}`)
+  log.info('i18n microservice running at: %s', bold(`${HOST}:${PORT}`))
 })
