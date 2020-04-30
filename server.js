@@ -9,8 +9,7 @@ require('dotenv').config()
 const {
   HOST = '0.0.0.0',
   PORT = '8001',
-  GOOGLE_AUTH_CREDS_PATH = '.google-service-credentials.json',
-  GOOGLE_AUTH_CREDS = readFileSync(join(__dirname, GOOGLE_AUTH_CREDS_PATH), 'utf8')
+  GOOGLE_API_KEY
 } = process.env
 
 const app = express()
@@ -18,7 +17,7 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-app.use('/google', google({ credentials: JSON.parse(GOOGLE_AUTH_CREDS) }))
+app.use('/google', google({ apiKey: GOOGLE_API_KEY }))
 
 app.listen(PORT, () => {
   console.log(`Translation microservice running on ${HOST}:${PORT}`)
