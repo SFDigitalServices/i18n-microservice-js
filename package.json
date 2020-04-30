@@ -19,7 +19,8 @@
     "express": "^4.17.1",
     "google-spreadsheet": "^3.0.11",
     "i18next": "^19.4.2",
-    "node-cache": "^5.1.0"
+    "node-cache": "^5.1.0",
+    "signale": "^1.4.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.3",
