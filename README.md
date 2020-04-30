@@ -12,23 +12,24 @@ translation data. There is currently only one endpoint:
     ```
 
 ### Query string parameters
-* `worksheets` filters the translations by one or more worksheet indices and/or
-  names. For instance:
+* `sheet` filters the translations by one or more worksheet indices and/or
+  titles. Multiple values are respected. Examples:
 
-  - `?worksheets=1` will match only the second worksheet (the first is index 0)
-  - `?worksheets=Generic+forms` will match only the worksheet titled "Generic
+  - `?sheet=1` will match only the second worksheet (the first is index 0)
+  - `?sheet=Generic+forms` will match only the worksheet titled "Generic
     forms"
-  - `?worksheets=*forms` will match all worksheets that end in "forms"
+  - `?sheet=*forms` will match all worksheets that end in "forms"
+  - `?sheet=1&sheet=2` will get the 2nd and 3rd worksheets
+  - `?sheet=!*wip*` will match worksheets that do _not_ contain "wip"
 
 ## Worksheet formatting
 Worksheets are expected to have a "key" column followed by one or more language
-code columns. The name of the key column isn't important, but for consistency
-you should use "String" or "Key".
+code columns. The name of the key column isn't significant, but for consistency
+it should be "String" or "Key".
 
 All of the rest of the columns should be named with [IETF language
 tags](https://en.wikipedia.org/wiki/IETF_language_tag), e.g. `en` for English,
-`es` for Spanish, `zh-TW` for Chinese (Taiwan), or `tl` for Tagalog. For
-instance:
+`es` for Spanish, `zh` for Chinese, or `tl` for Tagalog. For instance:
 
 | String | en | es |
 | :--- | :--- | :--- |
@@ -38,14 +39,24 @@ instance:
 The first ("key") column may be empty, in which case the English translation
 will be used as the key.
 
+## Development
+
+1. Copy `.env.template` to `.env` and fill in the required environment
+   variables.
+
+2. Run `npm run dev` to start the development server, which restarts whenever
+   you modify source files (or `package.json`) using [nodemon].
+
+3. Open `https://localhost:8001/google/:sheetId` with a public Google
+   spreadsheet's id in place of `:sheetId`, and watch what happens in the
+   console.
+
 ## Deployment
 This service can be deployed pretty much anywhere, but we're deploying it on
-Heroku for now. You will need to configure one of the two environment variables:
+Heroku for now. You'll need to set following environment variables ("config
+vars" in Heroku):
 
-- `GOOGLE_AUTH_CREDS` is the _contents_ of your [Google service account]
-  credentials as a JSON-encoded string.
-- `GOOGLE_AUTH_CREDS_PATH` is the path of your [Google service account]
-  JSON credentials file, which defaults to `.google-service-credentials.json`
-  if `GOOGLE_AUTH_CREDS` is not set.
+- `GOOGLE_API_KEY` (**required**) is your Google API key.
 
-[google service account]: https://cloud.google.com/iam/docs/service-accounts
+[dotenv]: https://npm.im/dotenv
+[nodemon]: https://npm.im/nodemon
