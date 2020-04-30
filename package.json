@@ -7,7 +7,14 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "lint": "standard",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "lib/__tests__/__*"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -24,7 +31,10 @@
     "signale": "^1.4.0"
   },
   "devDependencies": {
+    "get-port": "^5.1.1",
+    "jest": "^25.5.2",
     "nodemon": "^2.0.3",
-    "standard": "^14.3.3"
+    "standard": "^14.3.3",
+    "supertest": "^4.0.2"
   }
 }
