@@ -5,10 +5,12 @@ translation data. There is currently only one endpoint:
 ## `/google/:sheetId`
 
 ### URL parameters
-* `:sheetId` is the ID of the spreadsheet, which you can find in its URL:
+* `:sheetId` is the ID of the spreadsheet, which you can find in its URL between `/d/` and `/edit`:
 
     ```
     https://docs.google.com/spreadsheets/d/:sheetID/edit
+                                           ⬆-----⬆
+                                           this part
     ```
 
 ### Query string parameters
@@ -60,3 +62,4 @@ vars" in Heroku):
 
 [dotenv]: https://npm.im/dotenv
 [nodemon]: https://npm.im/nodemon
+[i18next]: https://www.i18next.com
