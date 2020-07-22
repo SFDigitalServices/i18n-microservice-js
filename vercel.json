@@ -1,0 +1,27 @@
+{
+  "routes": [
+    {
+      "src": "/(?<path>[^@]+)@(?<version>.+)",
+      "dest": "/$path?version=$version",
+      "headers": {
+        "Cache-Control": "max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/google/(?<sheetId>.+)",
+      "dest": "/api/google?sheetId=$sheetId",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS"
+      }
+    },
+    {
+      "src": "/phrase/(?<projectId>.+)",
+      "dest": "/api/phrase?projectId=$projectId",
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,OPTIONS"
+      }
+    }
+  ]
+}
