@@ -1,27 +1,20 @@
 {
   "routes": [
     {
-      "src": "/(?<path>[^@]+)@(?<version>.+)",
-      "dest": "/$path?version=$version",
-      "headers": {
-        "Cache-Control": "max-age=31536000, immutable"
-      }
+      "src": "/google/(?<sheetId>.+?)@(?<version>.+)",
+      "dest": "/api/google?sheetId=$sheetId&version=$version"
     },
     {
       "src": "/google/(?<sheetId>.+)",
-      "dest": "/api/google?sheetId=$sheetId",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS"
-      }
+      "dest": "/api/google?sheetId=$sheetId"
+    },
+    {
+      "src": "/phrase/(?<projectId>.+?)@(?<version>.+)",
+      "dest": "/api/phrase?projectId=$projectId&version=$version"
     },
     {
       "src": "/phrase/(?<projectId>.+)",
-      "dest": "/api/phrase?projectId=$projectId",
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS"
-      }
+      "dest": "/api/phrase?projectId=$projectId"
     }
   ]
 }
