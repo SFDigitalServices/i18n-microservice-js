@@ -1,6 +1,6 @@
 const fetch = require('node-fetch')
 const { Configuration, TranslationsApi } = require('phrase-js')
-const { asyncJsonHandler } = require('../lib/handlers')
+const { publicVersionedJson } = require('../lib/handlers')
 const { success, debug, warn } = require('../lib/log').scope('phrase')
 
 const { PHRASE_ACCESS_TOKEN } = process.env
@@ -13,10 +13,8 @@ const api = new TranslationsApi(config)
 // Phrase needs this because it thinks it's running in a browser
 global.FormData = require('formdata-node')
 
-module.exports = asyncJsonHandler(async (req, res, next) => {
-  // combine the query string and path params into a single query object
-  const query = Object.assign({}, req.query, req.params)
-  return getTranslations(query)
+module.exports = publicVersionedJson((req, res) => {
+  return getTranslations(req.query)
 })
 
 async function getTranslations (params) {

@@ -1,17 +1,17 @@
 const anymatch = require('anymatch')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
-const { asyncJsonHandler } = require('../lib/handlers')
+const { publicVersionedJson } = require('../lib/handlers')
 const { success, debug, warn } = require('../lib/log').scope('google')
 
 const { GOOGLE_API_KEY } = process.env
 
-module.exports = asyncJsonHandler((req, res) => {
+module.exports = publicVersionedJson((req, res) => {
   return getTranslations(req.query)
 })
 
 async function getTranslations (params) {
-  const { sheetId, sheet, version = Date.now() } = params
-  const doc = await loadSheet(sheetId, version)
+  const { sheetId, sheet } = params
+  const doc = await loadSheet(sheetId)
 
   const data = {}
   const matches = sheet ? anymatch(sheet) : () => true
@@ -52,9 +52,9 @@ async function getTranslations (params) {
   return data
 }
 
-async function loadSheet ({ id, version }) {
+async function loadSheet (sheetId) {
   // spreadsheet key is the long id in the sheets URL
-  const doc = new GoogleSpreadsheet(id)
+  const doc = new GoogleSpreadsheet(sheetId)
   doc.useApiKey(GOOGLE_API_KEY)
 
   try {
