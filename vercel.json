@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "src": "/google/(?<sheetId>.+?)@(?<version>.+)",
+      "dest": "/api/google?sheetId=$sheetId&version=$version"
+    },
+    {
+      "src": "/google/(?<sheetId>.+)",
+      "dest": "/api/google?sheetId=$sheetId"
+    },
+    {
+      "src": "/phrase/(?<projectId>.+?)@(?<version>.+)",
+      "dest": "/api/phrase?projectId=$projectId&version=$version"
+    },
+    {
+      "src": "/phrase/(?<projectId>.+)",
+      "dest": "/api/phrase?projectId=$projectId"
+    }
+  ]
+}

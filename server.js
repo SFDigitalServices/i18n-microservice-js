@@ -7,11 +7,13 @@ require('dotenv').config()
 const {
   HOST = '0.0.0.0',
   PORT = '8001',
-  GOOGLE_API_KEY
+  GOOGLE_API_KEY,
+  PHRASE_ACCESS_TOKEN
 } = process.env
 
 const server = app({
-  google: GOOGLE_API_KEY ? { apiKey: GOOGLE_API_KEY } : null
+  google: GOOGLE_API_KEY ? { apiKey: GOOGLE_API_KEY } : null,
+  phrase: PHRASE_ACCESS_TOKEN ? { apiKey: PHRASE_ACCESS_TOKEN } : null
 })
 
 server.listen(PORT, () => {
