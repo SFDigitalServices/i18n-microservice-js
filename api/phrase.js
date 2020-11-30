@@ -1,17 +1,10 @@
-const fetch = require('node-fetch')
-const { Configuration, TranslationsApi } = require('phrase-js')
-const { publicVersionedJson } = require('../lib/handlers')
+import { phraseConfig } from '../lib/phrase'
+import { TranslationsApi } from 'phrase-js'
+import { publicVersionedJson } from '../lib/handlers'
+
 const { success, debug, warn } = require('../lib/log').scope('phrase')
 
-const { PHRASE_ACCESS_TOKEN } = process.env
-const config = new Configuration({
-  apiKey: `token ${PHRASE_ACCESS_TOKEN}`,
-  fetchApi: fetch
-})
-const api = new TranslationsApi(config)
-
-// Phrase needs this because it thinks it's running in a browser
-global.FormData = require('formdata-node')
+const api = new TranslationsApi(phraseConfig)
 
 module.exports = publicVersionedJson((req, res) => {
   return getTranslations(req.query)
