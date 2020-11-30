@@ -9,6 +9,14 @@
       "dest": "/api/google?sheetId=$sheetId"
     },
     {
+      "src": "/phrase/projects$",
+      "dest": "/api/phrase-projects"
+    },
+    {
+      "src": "/phrase/projects/(?<projectId>.+)",
+      "dest": "/api/phrase-projects?id=$projectId"
+    },
+    {
       "src": "/phrase/(?<projectId>.+?)@(?<version>.+)",
       "dest": "/api/phrase?projectId=$projectId&version=$version"
     },
