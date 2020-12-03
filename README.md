@@ -1,8 +1,58 @@
 # i18n-microservice-js
 This is a microservice for transforming Google Spreadsheets into [i18next]
-translation data. There is currently only one endpoint:
+translation data. The API endpoints are:
+
+| Endpoint | Description |
+| :-- | :--- |
+| [/phrase/:projectId](#phraseprojectid) | Fetch translations from a Phrase project by ID |
+| [/phrase/projects/:id](#phraseprojectsid) | Fetch information about phrase projects |
+| [/google/:sheetId](#googlesheetid) | Fetch translations from a Google Sheet by ID |
+
+
+## `/phrase/:projectId`
+This endpoint outputs Phrase project metdata as JSON, and can be
+used to link to a project on phrase.com with only the project ID.
+
+### URL parameters
+* `:projectId` is the Phrase project ID, which you can find in the
+  project's settings on phrase.com.
+
+### Environment variables
+* `PHRASE_ACCESS_TOKEN` is an access token with permissions to view
+  the `city-county-of-san-francisco` Phrase account.
+
+
+## `/phrase/projects/:id`
+This endpoint outputs Phrase project metdata as JSON, and can be
+used to link to a project on phrase.com with only the project ID.
+
+### URL parameters
+* `:id` is the Phrase project ID, which you can find in the
+  project's settings on phrase.com.
+
+### Query parameters
+* `redirect=true` will send an HTTP redirect to the project
+  dashboard on phrase.com.
+
+### Environment variables
+* `PHRASE_ACCESS_TOKEN` is an access token with permissions to view
+  the `city-county-of-san-francisco` Phrase account.
+
+## Development
+
+1. Copy `.env.template` to `.env` and fill in the required environment
+   variables.
+
+2. Run `npm run dev` to start the development server, which restarts whenever
+   you modify source files (or `package.json`) using [nodemon].
+
+3. Open `https://localhost:8001/google/:sheetId` with a public Google
+   spreadsheet's id in place of `:sheetId`, and watch what happens in the
+   console.
 
 ## `/google/:sheetId`
+This endpoint outputs form translations fetched from a Google Sheet
+with a known [format](#worksheet-formatting).
 
 ### URL parameters
 * `:sheetId` is the ID of the spreadsheet, which you can find in its URL between `/d/` and `/edit`:
@@ -13,7 +63,7 @@ translation data. There is currently only one endpoint:
                                            this part
     ```
 
-### Query string parameters
+### Query parameters
 * `sheet` filters the translations by one or more worksheet indices and/or
   titles. Multiple values are respected. Examples:
 
@@ -24,7 +74,7 @@ translation data. There is currently only one endpoint:
   - `?sheet=1&sheet=2` will get the 2nd and 3rd worksheets
   - `?sheet=!*wip*` will match worksheets that do _not_ contain "wip"
 
-## Worksheet formatting
+### Worksheet formatting
 Worksheets are expected to have a "key" column followed by one or more language
 code columns. The name of the key column isn't significant, but for consistency
 it should be "String" or "Key".
@@ -41,25 +91,9 @@ tags](https://en.wikipedia.org/wiki/IETF_language_tag), e.g. `en` for English,
 The first ("key") column may be empty, in which case the English translation
 will be used as the key.
 
-## Development
+### Environment variables
+* `GOOGLE_API_KEY` is used to access the Google Sheets API. The
+  sheet(s) must be visible to the account from which the API key
+  was created.
 
-1. Copy `.env.template` to `.env` and fill in the required environment
-   variables.
-
-2. Run `npm run dev` to start the development server, which restarts whenever
-   you modify source files (or `package.json`) using [nodemon].
-
-3. Open `https://localhost:8001/google/:sheetId` with a public Google
-   spreadsheet's id in place of `:sheetId`, and watch what happens in the
-   console.
-
-## Deployment
-This service can be deployed pretty much anywhere, but we're deploying it on
-Heroku for now. You'll need to set following environment variables ("config
-vars" in Heroku):
-
-- `GOOGLE_API_KEY` (**required**) is your Google API key.
-
-[dotenv]: https://npm.im/dotenv
-[nodemon]: https://npm.im/nodemon
 [i18next]: https://www.i18next.com
