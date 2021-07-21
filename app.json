@@ -1,0 +1,16 @@
+{
+  "labs": [
+    "runtime-dyno-metadata"
+  ],
+  "addons": [
+    "papertrail:choklad",
+    "sentry:f1"
+  ],
+  "environments": {
+    "review": {
+      "addons": [
+        "papertrail:choklad"
+      ]
+    }
+  }
+}
