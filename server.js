@@ -1,21 +1,20 @@
-const app = require('./lib/app')
-const { bold } = require('chalk')
-const log = require('./lib/log')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
-require('dotenv').config()
+const express = require('express')
+const google = require('./lib/google')
+const phrase = require('./lib/phrase')
+const redirects = require('./lib/redirects')
 
-const {
-  HOST = '0.0.0.0',
-  PORT = '8001',
-  GOOGLE_API_KEY,
-  PHRASE_ACCESS_TOKEN
-} = process.env
+const { PORT = '8001' } = process.env
 
-const server = app({
-  google: GOOGLE_API_KEY ? { apiKey: GOOGLE_API_KEY } : null,
-  phrase: PHRASE_ACCESS_TOKEN ? { apiKey: PHRASE_ACCESS_TOKEN } : null
-})
+const app = express()
+  .use('/api/google', google)
+  .use('/api/phrase', phrase)
+  .use(redirects)
 
-server.listen(PORT, () => {
-  log.info('i18n microservice running at: %s', bold(`${HOST}:${PORT}`))
+const server = app.listen(PORT, () => {
+  const { address, port } = server.address()
+  console.log('server listening at %s:%s', address === '::' ? 'localhost' : address, port)
 })

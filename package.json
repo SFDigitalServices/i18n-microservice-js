@@ -1,13 +1,11 @@
 {
-  "name": "i18n-microservice-js",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "license": "MIT",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "lint": "standard",
-    "test": "jest --passWithNoTests --detectOpenHandles"
+    "lint": "eslint *.js lib",
+    "test": "jest"
   },
   "jest": {
     "testEnvironment": "node",
@@ -16,25 +14,28 @@
       "lib/__tests__/__*"
     ]
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": ">=12"
+  },
   "dependencies": {
     "anymatch": "^3.1.1",
     "chalk": "^4.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-memjs-cache": "^0.0.0-e7d02a9",
     "formdata-node": "^2.2.1",
     "google-spreadsheet": "^3.0.11",
     "i18next": "^19.4.2",
     "node-cache": "^5.1.0",
     "node-fetch": "^2.6.0",
     "phrase-js": "^1.0.4",
-    "signale": "^1.4.0"
+    "signale": "^1.4.0",
+    "url-template": "^2.0.8"
   },
   "devDependencies": {
-    "get-port": "^5.1.1",
+    "eslint": "^7.31.0",
+    "eslint-plugin-sfgov": "^1.0.0",
     "jest": "^25.5.2",
     "nodemon": "^2.0.3",
     "standard": "^14.3.3",
