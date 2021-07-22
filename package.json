@@ -23,7 +23,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "express-memjs-cache": "^0.0.0-f8e83e0",
+    "express-memjs-cache": "^0.0.0-d2381bd",
     "formdata-node": "^2.2.1",
     "google-spreadsheet": "^3.0.11",
     "i18next": "^19.4.2",
