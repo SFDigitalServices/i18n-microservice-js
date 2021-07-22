@@ -14,7 +14,11 @@ const app = express()
   .use('/api/phrase', phrase)
   .use(redirects)
 
-const server = app.listen(PORT, () => {
-  const { address, port } = server.address()
-  console.log('server listening at %s:%s', address === '::' ? 'localhost' : address, port)
-})
+if (module.parent) {
+  module.exports = app
+} else {
+  const server = app.listen(PORT, () => {
+    const { address, port } = server.address()
+    console.log('server listening at %s:%s', address === '::' ? 'localhost' : address, port)
+  })
+}
