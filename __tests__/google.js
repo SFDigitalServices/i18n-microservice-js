@@ -5,7 +5,6 @@ const cache = require('../lib/cache')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
 
 jest.mock('google-spreadsheet')
-jest.mock('memjs')
 jest.mock('../lib/cache')
 
 class InMemoryCache {

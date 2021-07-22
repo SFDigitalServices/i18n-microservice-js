@@ -5,7 +5,6 @@ const cache = require('../lib/cache')
 const { Configuration, TranslationsApi } = require('phrase-js')
 
 jest.mock('phrase-js')
-jest.mock('memjs')
 jest.mock('../lib/cache')
 
 const translationsList = jest.fn(() => Promise.resolve([]))
