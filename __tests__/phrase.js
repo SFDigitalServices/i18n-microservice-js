@@ -1,8 +1,9 @@
+/* eslint-env jest */
 const express = require('express')
 const supertest = require('supertest')
 const memjsCacheMiddleware = require('express-memjs-cache')
 const cache = require('../lib/cache')
-const { Configuration, TranslationsApi } = require('phrase-js')
+const { TranslationsApi } = require('phrase-js')
 
 jest.mock('phrase-js')
 jest.mock('../lib/cache')
