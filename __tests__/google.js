@@ -69,7 +69,7 @@ describe('Google Sheets API', () => {
       })
   })
 
-  it.skip('?{projectId,version} fetches a project + caches', async () => {
+  it('?{projectId,version} fetches a project + caches', async () => {
     const url = '/?sheetId=456&version=1.0.0'
     const cacheKey = 'google:456@1.0.0'
     const app = express().use(google)
