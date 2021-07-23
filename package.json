@@ -5,7 +5,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint *.js lib __tests__",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "jest": {
     "testEnvironment": "node",
