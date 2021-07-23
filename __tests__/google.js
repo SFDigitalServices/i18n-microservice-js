@@ -1,3 +1,4 @@
+/* eslint-env jest */
 const express = require('express')
 const supertest = require('supertest')
 const memjsCacheMiddleware = require('express-memjs-cache')
@@ -26,75 +27,72 @@ cache.mockImplementation((options = {}) => memjsCacheMiddleware({
 const google = require('../lib/google')
 
 describe('Google Sheets API', () => {
-  it('?sheetId fetches a sheet', () => {
-    GoogleSpreadsheet.mockImplementationOnce(() => ({
-      useApiKey: jest.fn(),
-      loadInfo: jest.fn(),
-      sheetsByIndex: {
-        1: {
-          title: 'My sheet',
-          sheetId: '123',
-          getRows: () => [
-            {key: 'string123', en: 'String #123'}
-          ],
-          headerValues: ['key', 'en']
-        }
-      }
-    }))
+  const sheetsByIndex = {
+    1: {
+      title: 'My sheet',
+      sheetId: '123',
+      getRows: () => [
+        { key: 'string123', en: 'String #123' }
+      ],
+      headerValues: ['key', 'en']
+    }
+  }
+  const translations = {
+    en: {
+      string123: 'String #123'
+    }
+  }
 
+  const useApiKey = jest.fn().mockName('useApiKey')
+  const loadInfo = jest.fn().mockName('loadInfo')
+
+  GoogleSpreadsheet.mockImplementation(() => ({
+    useApiKey,
+    loadInfo,
+    sheetsByIndex
+  }))
+
+  afterEach(() => {
+    useApiKey.mockClear()
+    loadInfo.mockClear()
+  })
+
+  it('?sheetId fetches a sheet', () => {
     const app = express().use(google)
     return supertest(app)
-      .get('?sheetId=123')
+      .get('/?sheetId=123')
       .expect('content-type', /json/)
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(useApiKey).toBeCalled()
+        expect(loadInfo).toBeCalled()
+        expect(body.data).toEqual(translations)
       })
   })
 
   it.skip('?{projectId,version} fetches a project + caches', async () => {
-    GoogleSpreadsheet.mockImplementationOnce(() => ({
-      useApiKey: jest.fn(),
-      loadInfo: jest.fn(),
-      sheetsByIndex: {
-        1: {
-          title: 'My sheet',
-          sheetId: '123',
-          getRows: () => [
-            {key: 'string123', en: 'String #123'}
-          ],
-          headerValues: ['key', 'en']
-        }
-      }
-    }))
-
-    const url = '?sheetId=456&version=1.0.0'
+    const url = '/?sheetId=456&version=1.0.0'
+    const cacheKey = 'google:456@1.0.0'
     const app = express().use(google)
 
     await supertest(app)
       .get(url)
       .expect('content-type', /json/)
+      .expect('x-cache-key', cacheKey)
+      .expect('x-cache-status', 'MISS')
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(body.data).toEqual(translations)
       })
+
+    expect(useApiKey).toBeCalled()
+    expect(loadInfo).toBeCalled()
 
     await supertest(app)
       .get(url)
       .expect('content-type', /json/)
+      .expect('x-cache-key', cacheKey)
       .expect('x-cache-status', 'HIT')
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(body.data).toEqual(translations)
       })
   })
 })
