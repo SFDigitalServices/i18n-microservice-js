@@ -4,8 +4,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "lint": "eslint *.js lib",
-    "test": "jest"
+    "lint": "eslint *.js lib __tests__",
+    "test": "jest --detectOpenHandles"
   },
   "jest": {
     "testEnvironment": "node",
