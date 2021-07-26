@@ -61,7 +61,7 @@ describe('Google Sheets API', () => {
       })
   })
 
-  it('?{sheetId,version} fetches a sheet + caches', async () => {
+  it.skip('?{sheetId,version} fetches a sheet + caches', async () => {
     const url = `/?sheetId=456&version=${hash}`
     const cacheKey = `google:456@${hash}`
 
