@@ -29,11 +29,17 @@ describe('app URL tests', () => {
         })
     })
 
-    it('redirects from /phrase/:projectId@:version', () => {
+    it('works via /phrase/:projectId@:version', () => {
       return server
         .get(`/phrase/${PROJECT_ID}@${VERSION}`)
-        .expect(302)
-        .expect('location', canonicalURL)
+        .expect(200)
+        .expect('content-type', /json/)
+        .then(({ body }) => {
+          expect(body).toEqual({
+            status: 'success',
+            data: translations
+          })
+        })
     })
   })
 
@@ -41,6 +47,11 @@ describe('app URL tests', () => {
     const GOOGLE_SHEET_ID = '1hb5bC01hS7SRW8Wc7woYY7uji_M0CWTlLWtqyNiziSQ'
     const VERSION = `0.0.0-${hash}`
     const canonicalURL = `/api/google?sheetId=${GOOGLE_SHEET_ID}&version=${VERSION}`
+    const translations = expect.objectContaining({
+      en: expect.objectContaining({
+        'page0.title': "Apply for help paying for your storefront's COVID-19 safety measures"
+      })
+    })
 
     it('serves up known Google Sheets translations', () => {
       jest.setTimeout(15000)
@@ -52,20 +63,22 @@ describe('app URL tests', () => {
         .then(({ body }) => {
           expect(body).toEqual({
             status: 'success',
-            data: expect.objectContaining({
-              en: expect.objectContaining({
-                'page0.title': "Apply for help paying for your storefront's COVID-19 safety measures"
-              })
-            })
+            data: translations
           })
         })
     })
 
-    it('redirects to the canonical URL from /google/:sheetId@:version', () => {
+    it('works via /google/:sheetId@:version', () => {
       return server
         .get(`/google/${GOOGLE_SHEET_ID}@${VERSION}`)
-        .expect(302)
-        .expect('location', canonicalURL)
+        .expect(200)
+        .expect('content-type', /json/)
+        .then(({ body }) => {
+          expect(body).toEqual({
+            status: 'success',
+            data: translations
+          })
+        })
     })
   })
 })
