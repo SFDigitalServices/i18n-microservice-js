@@ -89,11 +89,12 @@ describe('Google Sheets API', () => {
         expect(body.data).toEqual(translations)
       })
 
+    const hitOrMiss = process.env.CI ? /^(HIT|MISS)$/ : 'HIT'
     await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
-      .expect('x-cache-status', 'HIT')
+      .expect('x-cache-status', hitOrMiss)
       .then(({ body }) => {
         expect(body.data).toEqual(translations)
       })
@@ -102,7 +103,7 @@ describe('Google Sheets API', () => {
       .get(shortURL)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
-      .expect('x-cache-status', 'HIT')
+      .expect('x-cache-status', hitOrMiss)
       .then(({ body }) => {
         expect(body.data).toEqual(translations)
       })
