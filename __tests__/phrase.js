@@ -16,9 +16,11 @@ TranslationsApi.mockImplementation(() => ({
   translationsList
 }))
 
+const client = new InMemoryCache()
+afterEach(() => client.flush())
 cache.mockImplementation((options = {}) => memjsCacheMiddleware({
   ...options,
-  client: new InMemoryCache()
+  client
 }))
 
 const phrase = require('../lib/phrase')

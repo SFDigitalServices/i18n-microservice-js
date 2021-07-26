@@ -9,9 +9,11 @@ const { InMemoryCache } = require('../lib/test-utils')
 jest.mock('google-spreadsheet')
 jest.mock('../lib/cache')
 
+const client = new InMemoryCache()
+afterEach(() => client.flush())
 cache.mockImplementation((options = {}) => memjsCacheMiddleware({
   ...options,
-  client: new InMemoryCache()
+  client
 }))
 
 const hash = Date.now().toString(16)
