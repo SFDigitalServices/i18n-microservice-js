@@ -2,37 +2,31 @@
 const express = require('express')
 const supertest = require('supertest')
 const memjsCacheMiddleware = require('express-memjs-cache')
-const cache = require('../lib/cache')
 const { TranslationsApi } = require('phrase-js')
+const cache = require('../lib/cache')
+const { InMemoryCache } = require('../lib/test-utils')
 
 jest.mock('phrase-js')
 jest.mock('../lib/cache')
 
+const hash = Date.now().toString(16)
 const translationsList = jest.fn(() => Promise.resolve([]))
 
 TranslationsApi.mockImplementation(() => ({
   translationsList
 }))
 
-class InMemoryCache {
-  constructor () {
-    this.cache = new Map()
-    this.get = jest.fn((key, cb) => cb(null, this.cache.get(key)))
-    this.set = jest.fn((key, value, options, cb) => {
-      this.cache.set(key, value)
-      cb()
-    })
-  }
-}
-
-cache.mockImplementation((options = {}) => memjsCacheMiddleware({
-  ...options,
-  client: new InMemoryCache()
-}))
+const client = InMemoryCache.mock(cache, memjsCacheMiddleware)
+afterEach(() => {
+  client.flush()
+})
 
 const phrase = require('../lib/phrase')
 
 describe('Phrase API', () => {
+  const app = express().use(phrase)
+  const server = supertest(app)
+
   it('?projectId fetches a project', () => {
     translationsList.mockImplementationOnce(() => Promise.resolve([
       {
@@ -42,8 +36,7 @@ describe('Phrase API', () => {
       }
     ]))
 
-    const app = express().use(phrase)
-    return supertest(app)
+    return server
       .get('?projectId=123')
       .expect('content-type', /json/)
       .then(({ body }) => {
@@ -64,11 +57,9 @@ describe('Phrase API', () => {
       }
     ]))
 
-    const url = '?projectId=123&version=1.0.0'
+    const url = `?projectId=123&version=${hash}`
 
-    const app = express().use(phrase)
-
-    await supertest(app)
+    await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-status', 'MISS')
@@ -80,7 +71,7 @@ describe('Phrase API', () => {
         })
       })
 
-    await supertest(app)
+    await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-status', 'HIT')

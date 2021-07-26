@@ -2,28 +2,19 @@
 const express = require('express')
 const supertest = require('supertest')
 const memjsCacheMiddleware = require('express-memjs-cache')
-const cache = require('../lib/cache')
 const { GoogleSpreadsheet } = require('google-spreadsheet')
+const cache = require('../lib/cache')
+const { InMemoryCache } = require('../lib/test-utils')
 
 jest.mock('google-spreadsheet')
 jest.mock('../lib/cache')
 
-class InMemoryCache {
-  constructor () {
-    this.cache = new Map()
-    this.get = jest.fn((key, cb) => cb(null, this.cache.get(key)))
-    this.set = jest.fn((key, value, options, cb) => {
-      this.cache.set(key, value)
-      cb()
-    })
-  }
-}
+const client = InMemoryCache.mock(cache, memjsCacheMiddleware)
+afterEach(() => {
+  client.flush()
+})
 
-cache.mockImplementation((options = {}) => memjsCacheMiddleware({
-  ...options,
-  client: new InMemoryCache()
-}))
-
+const hash = Date.now().toString(16)
 const google = require('../lib/google')
 
 describe('Google Sheets API', () => {
@@ -43,6 +34,8 @@ describe('Google Sheets API', () => {
     }
   }
 
+  const app = express().use(google)
+  const server = supertest(app)
   const useApiKey = jest.fn().mockName('useApiKey')
   const loadInfo = jest.fn().mockName('loadInfo')
 
@@ -58,8 +51,7 @@ describe('Google Sheets API', () => {
   })
 
   it('?sheetId fetches a sheet', () => {
-    const app = express().use(google)
-    return supertest(app)
+    return server
       .get('/?sheetId=123')
       .expect('content-type', /json/)
       .then(({ body }) => {
@@ -69,12 +61,11 @@ describe('Google Sheets API', () => {
       })
   })
 
-  it.skip('?{projectId,version} fetches a project + caches', async () => {
-    const url = '/?sheetId=456&version=1.0.0'
-    const cacheKey = 'google:456@1.0.0'
-    const app = express().use(google)
+  it.skip('?{sheetId,version} fetches a sheet + caches', async () => {
+    const url = `/?sheetId=456&version=${hash}`
+    const cacheKey = `google:456@${hash}`
 
-    await supertest(app)
+    await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
@@ -86,7 +77,7 @@ describe('Google Sheets API', () => {
     expect(useApiKey).toBeCalled()
     expect(loadInfo).toBeCalled()
 
-    await supertest(app)
+    await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
