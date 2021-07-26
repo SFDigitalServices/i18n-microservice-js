@@ -18,16 +18,6 @@ const hash = Date.now().toString(16)
 const google = require('../lib/google')
 
 describe('Google Sheets API', () => {
-  const sheetsByIndex = {
-    1: {
-      title: 'My sheet',
-      sheetId: '123',
-      getRows: () => [
-        { key: 'string123', en: 'String #123' }
-      ],
-      headerValues: ['key', 'en']
-    }
-  }
   const translations = {
     en: {
       string123: 'String #123'
@@ -42,10 +32,20 @@ describe('Google Sheets API', () => {
   GoogleSpreadsheet.mockImplementation(() => ({
     useApiKey,
     loadInfo,
-    sheetsByIndex
+    sheetsByIndex: {
+      1: {
+        title: 'My sheet',
+        sheetId: 'whatever',
+        getRows: jest.fn(() => [
+          { key: 'string123', en: 'String #123' }
+        ]),
+        headerValues: ['key', 'en']
+      }
+    }
   }))
 
   afterEach(() => {
+    GoogleSpreadsheet.mockClear()
     useApiKey.mockClear()
     loadInfo.mockClear()
   })
@@ -55,13 +55,27 @@ describe('Google Sheets API', () => {
       .get('/?sheetId=123')
       .expect('content-type', /json/)
       .then(({ body }) => {
+        expect(GoogleSpreadsheet).toBeCalledWith('123')
         expect(useApiKey).toBeCalled()
         expect(loadInfo).toBeCalled()
         expect(body.data).toEqual(translations)
       })
   })
 
-  it.skip('?{sheetId,version} fetches a sheet + caches', async () => {
+  it('/:sheetId@:version fetches a sheet', () => {
+    return server
+      .get(`/999@${hash}`)
+      .expect('content-type', /json/)
+      .expect('x-cache-key', `google:999@${hash}`)
+      .expect('x-cache-status', 'MISS')
+      .then(({ body }) => {
+        expect(body.status).toBe('success')
+        expect(GoogleSpreadsheet).toBeCalledWith('999')
+        expect(body.data).toEqual(translations)
+      })
+  })
+
+  it('?{sheetId,version} fetches a sheet + caches', async () => {
     const url = `/?sheetId=456&version=${hash}`
     const cacheKey = `google:456@${hash}`
 
@@ -79,6 +93,15 @@ describe('Google Sheets API', () => {
 
     await server
       .get(url)
+      .expect('content-type', /json/)
+      .expect('x-cache-key', cacheKey)
+      .expect('x-cache-status', 'HIT')
+      .then(({ body }) => {
+        expect(body.data).toEqual(translations)
+      })
+
+    await server
+      .get(`/456@${hash}`)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
       .expect('x-cache-status', 'HIT')

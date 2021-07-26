@@ -82,5 +82,17 @@ describe('Phrase API', () => {
           }
         })
       })
+
+    await server
+      .get(`/123@${hash}`)
+      .expect('content-type', /json/)
+      .expect('x-cache-status', 'HIT')
+      .then(({ body }) => {
+        expect(body.data).toEqual({
+          en: {
+            string123: 'String #123'
+          }
+        })
+      })
   })
 })
