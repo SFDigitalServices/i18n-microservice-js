@@ -5,14 +5,12 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const google = require('./lib/google')
 const phrase = require('./lib/phrase')
-const redirects = require('./lib/redirects')
 
 const { PORT = '8001' } = process.env
 
 const app = express()
-  .use('/api/google', google)
-  .use('/api/phrase', phrase)
-  .use(redirects)
+  .use(/^\/(api\/)?google/, google)
+  .use(/^\/(api\/)?phrase/, phrase)
 
 if (module.parent) {
   module.exports = app

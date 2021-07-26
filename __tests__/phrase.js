@@ -16,59 +16,54 @@ TranslationsApi.mockImplementation(() => ({
   translationsList
 }))
 
-const client = InMemoryCache.mock(cache, memjsCacheMiddleware)
-afterEach(() => {
-  client.flush()
-})
+InMemoryCache.mock(cache, memjsCacheMiddleware)
 
 const phrase = require('../lib/phrase')
 
 describe('Phrase API', () => {
   const app = express().use(phrase)
   const server = supertest(app)
+  const translations = {
+    en: {
+      string123: 'String #123'
+    }
+  }
+
+  translationsList.mockImplementation(() => Promise.resolve([
+    {
+      key: { name: 'string123' },
+      locale: { code: 'en' },
+      content: 'String #123'
+    }
+  ]))
 
   it('?projectId fetches a project', () => {
-    translationsList.mockImplementationOnce(() => Promise.resolve([
-      {
-        key: { name: 'string123' },
-        locale: { code: 'en' },
-        content: 'String #123'
-      }
-    ]))
-
     return server
-      .get('?projectId=123')
+      .get('?projectId=1')
       .expect('content-type', /json/)
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(body.data).toEqual(translations)
+      })
+  })
+
+  it('/:projectId@:version fetches a project', () => {
+    return server
+      .get('?projectId=1')
+      .expect('content-type', /json/)
+      .then(({ body }) => {
+        expect(body.data).toEqual(translations)
       })
   })
 
   it('?{projectId,version} fetches a project + caches', async () => {
-    translationsList.mockImplementationOnce(() => Promise.resolve([
-      {
-        key: { name: 'string123' },
-        locale: { code: 'en' },
-        content: 'String #123'
-      }
-    ]))
-
-    const url = `?projectId=123&version=${hash}`
+    const url = `?projectId=2&version=${hash}`
 
     await server
       .get(url)
       .expect('content-type', /json/)
       .expect('x-cache-status', 'MISS')
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(body.data).toEqual(translations)
       })
 
     await server
@@ -76,11 +71,15 @@ describe('Phrase API', () => {
       .expect('content-type', /json/)
       .expect('x-cache-status', 'HIT')
       .then(({ body }) => {
-        expect(body.data).toEqual({
-          en: {
-            string123: 'String #123'
-          }
-        })
+        expect(body.data).toEqual(translations)
+      })
+
+    await server
+      .get(`/2@${hash}`)
+      .expect('content-type', /json/)
+      .expect('x-cache-status', 'HIT')
+      .then(({ body }) => {
+        expect(body.data).toEqual(translations)
       })
   })
 })
