@@ -9,12 +9,9 @@ const { InMemoryCache } = require('../lib/test-utils')
 jest.mock('google-spreadsheet')
 jest.mock('../lib/cache')
 
-const client = InMemoryCache.mock(cache, memjsCacheMiddleware)
-afterEach(() => {
-  client.flush()
-})
-
 const hash = Date.now().toString(16)
+InMemoryCache.mock(cache, memjsCacheMiddleware)
+
 const google = require('../lib/google')
 
 describe('Google Sheets API', () => {
@@ -52,10 +49,10 @@ describe('Google Sheets API', () => {
 
   it('?sheetId fetches a sheet', () => {
     return server
-      .get('/?sheetId=123')
+      .get('/?sheetId=1')
       .expect('content-type', /json/)
       .then(({ body }) => {
-        expect(GoogleSpreadsheet).toBeCalledWith('123')
+        expect(GoogleSpreadsheet).toBeCalledWith('1')
         expect(useApiKey).toBeCalled()
         expect(loadInfo).toBeCalled()
         expect(body.data).toEqual(translations)
@@ -64,20 +61,20 @@ describe('Google Sheets API', () => {
 
   it('/:sheetId@:version fetches a sheet', () => {
     return server
-      .get(`/999@${hash}`)
+      .get(`/2@${hash}`)
       .expect('content-type', /json/)
-      .expect('x-cache-key', `google:999@${hash}`)
+      .expect('x-cache-key', `google:2@${hash}`)
       .expect('x-cache-status', 'MISS')
       .then(({ body }) => {
         expect(body.status).toBe('success')
-        expect(GoogleSpreadsheet).toBeCalledWith('999')
+        expect(GoogleSpreadsheet).toBeCalledWith('2')
         expect(body.data).toEqual(translations)
       })
   })
 
   it('?{sheetId,version} fetches a sheet + caches', async () => {
-    const url = `/?sheetId=666&version=${hash}`
-    const cacheKey = `google:666@${hash}`
+    const url = `/?sheetId=3&version=${hash}`
+    const cacheKey = `google:3@${hash}`
 
     await server
       .get(url)
@@ -85,11 +82,11 @@ describe('Google Sheets API', () => {
       .expect('x-cache-key', cacheKey)
       .expect('x-cache-status', 'MISS')
       .then(({ body }) => {
+        expect(GoogleSpreadsheet).toBeCalledWith('3')
+        expect(useApiKey).toBeCalled()
+        expect(loadInfo).toBeCalled()
         expect(body.data).toEqual(translations)
       })
-
-    expect(useApiKey).toBeCalled()
-    expect(loadInfo).toBeCalled()
 
     await server
       .get(url)
@@ -101,7 +98,7 @@ describe('Google Sheets API', () => {
       })
 
     await server
-      .get(`/666@${hash}`)
+      .get(`/3@${hash}`)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
       .expect('x-cache-status', 'HIT')
