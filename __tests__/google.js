@@ -9,12 +9,10 @@ const { InMemoryCache } = require('../lib/test-utils')
 jest.mock('google-spreadsheet')
 jest.mock('../lib/cache')
 
-const client = new InMemoryCache()
-afterEach(() => client.flush())
-cache.mockImplementation((options = {}) => memjsCacheMiddleware({
-  ...options,
-  client
-}))
+const client = InMemoryCache.mock(cache, memjsCacheMiddleware)
+afterEach(() => {
+  client.flush()
+})
 
 const hash = Date.now().toString(16)
 const google = require('../lib/google')
@@ -63,7 +61,7 @@ describe('Google Sheets API', () => {
       })
   })
 
-  it('?{projectId,version} fetches a project + caches', async () => {
+  it('?{sheetId,version} fetches a sheet + caches', async () => {
     const url = `/?sheetId=456&version=${hash}`
     const cacheKey = `google:456@${hash}`
 
