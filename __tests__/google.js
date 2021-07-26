@@ -76,8 +76,8 @@ describe('Google Sheets API', () => {
   })
 
   it('?{sheetId,version} fetches a sheet + caches', async () => {
-    const url = `/?sheetId=456&version=${hash}`
-    const cacheKey = `google:456@${hash}`
+    const url = `/?sheetId=666&version=${hash}`
+    const cacheKey = `google:666@${hash}`
 
     await server
       .get(url)
@@ -101,7 +101,7 @@ describe('Google Sheets API', () => {
       })
 
     await server
-      .get(`/456@${hash}`)
+      .get(`/666@${hash}`)
       .expect('content-type', /json/)
       .expect('x-cache-key', cacheKey)
       .expect('x-cache-status', 'HIT')
