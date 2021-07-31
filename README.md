@@ -1,6 +1,16 @@
 # i18n-microservice-js
-This is a microservice for transforming Google Spreadsheets into [i18next]
-translation data. There is currently only one endpoint:
+This is an API for transforming Phrase projects and Google Spreadsheets into
+[i18next] translation data. The endpoints are:
+
+## `/phrase/:projectId`
+Returns **un-cached** translations for the given Phrase project.
+
+## `/phrase/:projectId@version`
+Returns **permanently cached** translations for the given Phrase project for
+each unique value of `:version`.
+
+## `/phrase/:projectId/link`
+Redirects to the dashboard for the given Phrase project.
 
 ## `/google/:sheetId`
 
