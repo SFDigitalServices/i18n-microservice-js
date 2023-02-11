@@ -37,7 +37,7 @@
     "eslint": "^7.31.0",
     "eslint-plugin-sfgov": "^1.0.0",
     "jest": "^25.5.2",
-    "nodemon": "^2.0.3",
+    "nodemon": "^2.0.20",
     "standard": "^14.3.3",
     "supertest": "^4.0.2"
   }
